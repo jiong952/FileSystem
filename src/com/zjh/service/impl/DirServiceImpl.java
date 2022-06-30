@@ -138,6 +138,7 @@ public class DirServiceImpl implements DirService {
         return null;
     }
 
+
     @Override
     public Boolean freeDir(String dirName) {
         return null;
@@ -155,17 +156,17 @@ public class DirServiceImpl implements DirService {
 
     @Override
     /**显示全路径**/
-    public void pwd() {
+    public String pwd(FCB fcb) {
         Memory memory = Memory.getInstance();
         StringBuilder sb = new StringBuilder();
-        FCB temp = memory.getCurDir();
+        FCB temp = fcb;
         while (temp != memory.getRootDir()){
             //还没打印到根目录
-            sb.insert(0,memory.getCurDir().getFileName());
+            sb.insert(0,temp.getFileName());
             sb.insert(0,'/');
             temp = temp.getFather();
         }
-        System.out.println(sb);
+        return sb.toString();
     }
     /**输入命令时显示当前目录**/
     @Override

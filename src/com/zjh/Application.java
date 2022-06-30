@@ -2,6 +2,7 @@ package com.zjh;
 
 import com.zjh.constant.Constants;
 import com.zjh.pojo.Disk;
+import com.zjh.pojo.Memory;
 import com.zjh.service.*;
 import com.zjh.service.impl.*;
 import com.zjh.utils.Utility;
@@ -69,7 +70,8 @@ public class Application {
                                     dirService.dir();
                                     break;
                                 case "pwd":
-                                    dirService.pwd();
+                                    String path = dirService.pwd(Memory.getInstance().getCurDir());
+                                    System.out.println(path);
                                     break;
                                 case "create":
                                     System.out.println("请输入文件权限：r:读 w:写 x:执行[前三位表示自己] [后三位表示其他用户]");
@@ -82,6 +84,23 @@ public class Application {
                                         break;
                                     }
                                     dirService.cd(inputs2[1]);
+                                    break;
+                                case "open":
+                                    if(inputs2.length == 1){
+                                        System.out.println("[error]: 路径不可为空");
+                                        break;
+                                    }
+                                    fileService.open(inputs2[1]);
+                                    break;
+                                case "show_open":
+                                    fileService.show_open();
+                                    break;
+                                case "close":
+                                    if(inputs2.length == 1){
+                                        System.out.println("[error]: 路径不可为空");
+                                        break;
+                                    }
+                                    fileService.close(inputs2[1]);
                                     break;
                                 default:
                                     break;

@@ -42,6 +42,7 @@ public interface DirService {
      */
     FCB pathResolve(String path);
 
+
     /**
      * 释放目录中所有文件占用内存（后序遍历）
      *
@@ -63,8 +64,11 @@ public interface DirService {
     /**
      * 显示当前全目录路径
      * /zjh/a
+     *
+     * @param fcb 指定目录
+     * @return {@link String} 全路径
      */
-    void pwd();
+    String pwd(FCB fcb);
 
     /**
      * 显示当前目录

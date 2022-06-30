@@ -83,6 +83,7 @@ public class UserServiceImpl implements UserService {
         }
         instance.setCurUser(null);
         instance.setCurDir(instance.getRootDir());
+        instance.getOpenFileList().clear();
         DataService dataService = new DataServiceImpl();
         dataService.saveData(Constants.SAVE_PATH);
         return true;

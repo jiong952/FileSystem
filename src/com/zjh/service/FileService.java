@@ -25,6 +25,11 @@ public interface FileService {
     Boolean open(String filePath);
 
     /**
+     * 显示打开的文件
+     */
+    void show_open();
+
+    /**
      * 读取文件
      *
      * @param filePath 文件路径
