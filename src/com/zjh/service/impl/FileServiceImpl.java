@@ -86,10 +86,12 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public Boolean write(String filePath) {
+        // TODO: 2022-07-01 写 读 删除 所有权限加限制6位
         return null;
     }
 
     @Override
+    /**关闭文件**/
     public Boolean close(String filePath) {
         //判断是否存在
         FCB fcb = dirService.pathResolve(filePath);

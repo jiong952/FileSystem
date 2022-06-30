@@ -117,6 +117,7 @@ public class DirServiceImpl implements DirService {
             }
         }else {
             //以/开头 从根目录逐层往下找
+            path = path.substring(1);
             String[] splitDir = path.split("/");
             FCB temp = rootDir;
             for (int i = 0; i < splitDir.length - 1; i++) {
@@ -130,7 +131,7 @@ public class DirServiceImpl implements DirService {
             }
             //在该目录下找
             for (FCB child : temp.getChildren()) {
-                if(child.getFileName().equals(path)){
+                if(child.getFileName().equals(splitDir[splitDir.length - 1])){
                     return child;
                 }
             }
