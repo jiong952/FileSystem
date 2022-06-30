@@ -84,10 +84,7 @@ public class UserServiceImpl implements UserService {
         instance.setCurUser(null);
         instance.setCurDir(instance.getRootDir());
         DataService dataService = new DataServiceImpl();
-        Boolean flag = dataService.saveData(Constants.SAVE_PATH);
-        if(flag){
-            System.exit(0);
-        }
+        dataService.saveData(Constants.SAVE_PATH);
         return true;
     }
 }

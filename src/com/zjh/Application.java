@@ -33,8 +33,8 @@ public class Application {
             }
         }
         Boolean login = false;
-        while (!login){
-            System.out.println("登录 / 注册 / 注销");
+        while (true){
+            System.out.println("登录 / 注册 / 退出");
             String nextLine = scanner.nextLine();
             String[] inputs = Utility.inputResolve(nextLine);
             switch (inputs[0]){
@@ -44,6 +44,25 @@ public class Application {
                     System.out.print("密码:");
                     String pwd = scanner.nextLine();
                     login = userService.login(username, pwd);
+                    if(login){
+                        System.out.println("进入系统.....");
+                        Boolean logout = false;
+                        while (!logout){
+                            dirService.showPath();
+                            String nextLine2 = scanner.nextLine();
+                            String[] inputs2 = Utility.inputResolve(nextLine2);
+                            switch (inputs2[0]){
+                                case "logout":
+                                    logout = userService.logout();
+                                    break;
+                                case "pwd":
+                                    dirService.pwd();
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
                     break;
                 case "register":
                     System.out.print("用户名:");
@@ -52,19 +71,11 @@ public class Application {
                     String pwd2 = scanner.nextLine();
                     userService.register(username2,pwd2);
                     break;
-                case "logout":
-                    userService.logout();
+                case "exit":
+                    System.exit(0);
                     break;
                 default:
                     break;
-            }
-        }
-        System.out.println("进入系统");
-        while (true){
-            System.out.println("是否退出：(Y/N)");
-            String s = scanner.nextLine();
-            if(s.equals("Y")) {
-                userService.logout();
             }
         }
     }
