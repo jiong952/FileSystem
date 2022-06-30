@@ -15,13 +15,15 @@ public interface DirService {
      */
     void dir();
 
+
     /**
      * 创建目录
      *
-     * @param dirName 文件夹名字
+     * @param dirName    目录名
+     * @param permission 权限
      * @return {@link Boolean}
      */
-    Boolean mkdir(String dirName);
+    Boolean mkdir(String dirName,String permission);
 
     /**
      * 切换目录

@@ -6,13 +6,15 @@ package com.zjh.service;
  * @since 2022-06-30 14:11
  */
 public interface FileService {
+
     /**
      * 创建文件
      *
-     * @param fileName 文件名称
+     * @param fileName   文件名称
+     * @param permission 权限
      * @return {@link Boolean}
      */
-    Boolean create(String fileName);
+    Boolean create(String fileName, String permission);
 
     /**
      * 打开文件
@@ -54,13 +56,6 @@ public interface FileService {
      */
     Boolean delete(String filePath);
 
-    /**
-     * 创建索引节点
-     *
-     * @param permission 权限
-     * @return {@link Boolean}
-     */
-    Boolean createIndexNode(String permission);
 
     /**
      * 释放文件空间 修改FAT表和位示图

@@ -31,7 +31,7 @@ public class DataServiceImpl implements DataService {
         List<FCB> fcbList = new ArrayList<>();
         newDisk.setFcbList(fcbList);
         //初始化根目录
-        IndexNode indexNode = new IndexNode("rwxrwx",0,-1,0,new Date());
+        IndexNode indexNode = new IndexNode("rwxrwx",0,-1,0,null,new Date());
         FCB rootDir = new FCB("rootDir",'D',indexNode,null,new LinkedList<>());
         fcbList.add(rootDir);
 

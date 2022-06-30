@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
         userMap.put(userName,new User(userName,password,null));
         //新建一个用户FCB及索引结点 其他用户无权限
         FCB rootDir = instance.getRootDir();
-        IndexNode indexNode = new IndexNode("rwx---",0,-1,0,new Date());
+        IndexNode indexNode = new IndexNode("rwx---",0,-1,0,userName,new Date());
         FCB user_fcb = new FCB(userName,'D',indexNode, rootDir,new LinkedList<>());
         //放进fcb集合
         Disk.getINSTANCE().getFcbList().add(user_fcb);

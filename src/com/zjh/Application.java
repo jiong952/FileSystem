@@ -52,11 +52,36 @@ public class Application {
                             String nextLine2 = scanner.nextLine();
                             String[] inputs2 = Utility.inputResolve(nextLine2);
                             switch (inputs2[0]){
+                                case "login":
+                                    userService.login(null, null);
+                                    break;
+                                case "register":
+                                    userService.register(null,null);
+                                    break;
                                 case "logout":
                                     logout = userService.logout();
                                     break;
+                                case "mkdir":
+                                    System.out.println("请输入目录权限：r:读 w:写 x:执行[前三位表示自己] [后三位表示其他用户]");
+                                    String permission2 = scanner.nextLine();
+                                    dirService.mkdir(inputs2[1],permission2);
+                                case "dir":
+                                    dirService.dir();
+                                    break;
                                 case "pwd":
                                     dirService.pwd();
+                                    break;
+                                case "create":
+                                    System.out.println("请输入文件权限：r:读 w:写 x:执行[前三位表示自己] [后三位表示其他用户]");
+                                    String permission = scanner.nextLine();
+                                    fileService.create(inputs2[1],permission);
+                                    break;
+                                case "cd":
+                                    if(inputs2.length == 1){
+                                        System.out.println("[error]: 路径不可为空");
+                                        break;
+                                    }
+                                    dirService.cd(inputs2[1]);
                                     break;
                                 default:
                                     break;

@@ -13,14 +13,25 @@ public class IndexNode implements Serializable {
     private int size; //文件大小
     private int first_block; //文件首地址（第一个盘块号）
     private int fcbNum; //文件项个数 如果是普通文件为0 目录看其下有多少个
+    private String creator; //创建者
     private Date updateTime; //文件修改时间
 
-    public IndexNode(String permission, int size, int first_block, int fcbNum, Date updateTime) {
+    public IndexNode(String permission, int size, int first_block, int fcbNum, String creator, Date updateTime) {
         this.permission = permission;
         this.size = size;
         this.first_block = first_block;
         this.fcbNum = fcbNum;
+        this.creator = creator;
         this.updateTime = updateTime;
+    }
+
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public IndexNode() {
