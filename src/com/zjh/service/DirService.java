@@ -42,15 +42,13 @@ public interface DirService {
      */
     FCB pathResolve(String path);
 
-
     /**
-     * 释放目录中所有文件占用内存（后序遍历）
+     * 递归修改父目录大小
      *
-     * @param dirName 目录名
-     * @return {@link Boolean}
+     * @param fcb   FCB
+     * @param isAdd 添加文件 add
      */
-    Boolean freeDir(String dirName);
-
+    void updateSize(FCB fcb,Boolean isAdd);
     /**
      * 简略打印本目录的文件名信息
      */
@@ -75,4 +73,9 @@ public interface DirService {
      * /a
      */
     void showPath();
+
+    /**
+     * 显示位示图
+     */
+    void bitmap();
 }

@@ -1,7 +1,9 @@
 package com.zjh.service.impl;
 
+import com.zjh.constant.Constants;
 import com.zjh.pojo.*;
 import com.zjh.service.DirService;
+import com.zjh.service.FileService;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -15,6 +17,7 @@ import java.util.Objects;
  */
 public class DirServiceImpl implements DirService {
     private static final DirService dirService = new DirServiceImpl();
+    private static final FileService fileService = new FileServiceImpl();
     public static void main(String[] args) {
         StringBuilder sb = new StringBuilder();
         sb.insert(0,'a');
@@ -97,6 +100,13 @@ public class DirServiceImpl implements DirService {
             return false;
         }else {
             //type D 切换到对应目录
+            //判断权限
+            //判断权限
+            int permission = fileService.checkPermission(fcb);
+            if(permission == 0){
+                System.out.println("[error]: 无权限");
+                return false;
+            }
             Memory.getInstance().setCurDir(fcb);
         }
         return null;
@@ -139,11 +149,23 @@ public class DirServiceImpl implements DirService {
         return null;
     }
 
-
     @Override
-    public Boolean freeDir(String dirName) {
-        return null;
+    /**更新目录大小**/
+    public void updateSize(FCB fcb, Boolean isAdd) {
+        FCB temp = fcb.getFather();
+        while (temp != Memory.getInstance().getRootDir()){
+            //递归修改父目录的大小
+            int size = temp.getIndexNode().getSize();
+            if(isAdd){
+                //增加目录大小
+                temp.getIndexNode().setSize(size + fcb.getIndexNode().getSize());
+            }else {
+                temp.getIndexNode().setSize(size - fcb.getIndexNode().getSize());
+            }
+            temp = temp.getFather();
+        }
     }
+
 
     @Override
     public void ls() {
@@ -181,4 +203,18 @@ public class DirServiceImpl implements DirService {
         sb.append("]");
         System.out.print(sb);
     }
+
+    @Override
+    /**显示位示图**/
+    public void bitmap() {
+        FAT[] fats = Memory.getInstance().getFat();
+        for (int i = 0; i < fats.length; i++) {
+            System.out.print(fats[i].getBitmap() + " ");
+            if((i+1) % Constants.WORD_SIZE == 0){
+                System.out.println();
+            }
+        }
+    }
+
+
 }

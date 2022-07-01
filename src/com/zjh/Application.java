@@ -63,8 +63,12 @@ public class Application {
                                     logout = userService.logout();
                                     break;
                                 case "mkdir":
-                                    System.out.println("请输入目录权限：r:读 w:写 x:执行[前三位表示自己] [后三位表示其他用户]");
+                                    System.out.println("请输入6位目录权限：r:读 w:写 x:执行[前三位表示自己] [后三位表示其他用户]");
                                     String permission2 = scanner.nextLine();
+                                    while(permission2.length() != 6){
+                                        System.out.println("请输入6位目录权限：r:读 w:写 x:执行[前三位表示自己] [后三位表示其他用户]");
+                                        permission2 = scanner.nextLine();
+                                    }
                                     dirService.mkdir(inputs2[1],permission2);
                                 case "dir":
                                     dirService.dir();
@@ -76,18 +80,22 @@ public class Application {
                                 case "create":
                                     System.out.println("请输入文件权限：r:读 w:写 x:执行[前三位表示自己] [后三位表示其他用户]");
                                     String permission = scanner.nextLine();
+                                    while (permission.length() != 6){
+                                        System.out.println("请输入文件权限：r:读 w:写 x:执行[前三位表示自己] [后三位表示其他用户]");
+                                        permission = scanner.nextLine();
+                                    }
                                     fileService.create(inputs2[1],permission);
                                     break;
                                 case "cd":
                                     if(inputs2.length == 1){
-                                        System.out.println("[error]: 路径不可为空");
+                                        System.out.println("cd [fileName]");
                                         break;
                                     }
                                     dirService.cd(inputs2[1]);
                                     break;
                                 case "open":
                                     if(inputs2.length == 1){
-                                        System.out.println("[error]: 路径不可为空");
+                                        System.out.println("open [fileName]");
                                         break;
                                     }
                                     fileService.open(inputs2[1]);
@@ -97,12 +105,30 @@ public class Application {
                                     break;
                                 case "close":
                                     if(inputs2.length == 1){
-                                        System.out.println("[error]: 路径不可为空");
+                                        System.out.println("close [fileName]");
                                         break;
                                     }
                                     fileService.close(inputs2[1]);
                                     break;
+                                case "read":
+                                    if(inputs2.length == 1){
+                                        System.out.println("read [fileName]");
+                                        break;
+                                    }
+                                    fileService.read(inputs2[1]);
+                                    break;
+                                case "write":
+                                    if(inputs2.length == 1){
+                                        System.out.println("write [fileName]");
+                                        break;
+                                    }
+                                    fileService.write(inputs2[1]);
+                                    break;
+                                case "bitmap":
+                                    dirService.bitmap();
+                                    break;
                                 default:
+                                    // TODO: 2022-07-01 这里放help函数
                                     break;
                             }
                         }

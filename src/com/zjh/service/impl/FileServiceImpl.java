@@ -1,12 +1,15 @@
 package com.zjh.service.impl;
 
+import com.zjh.constant.Constants;
 import com.zjh.pojo.*;
 import com.zjh.service.DirService;
+import com.zjh.service.DiskService;
 import com.zjh.service.FileService;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Scanner;
 
 /**
  * @author 张俊鸿
@@ -15,6 +18,9 @@ import java.util.Objects;
  */
 public class FileServiceImpl implements FileService {
     private static final DirService dirService = new DirServiceImpl();
+    private static final FileService fileService = new FileServiceImpl();
+    private static final DiskService diskService = new DiskServiceImpl();
+    private static final Scanner scanner = new Scanner(System.in);
     @Override
     /**创建文件**/
     public Boolean create(String fileName,String permission) {
@@ -61,6 +67,12 @@ public class FileServiceImpl implements FileService {
             return false;
         }else {
             //type N 普通文件
+            //判断权限
+            int permission = fileService.checkPermission(fcb);
+            if(permission == 0){
+                System.out.println("[error]: 无权限");
+                return false;
+            }
             //加入openFileList中
             String fill_path = dirService.pwd(fcb);
             OpenFile openFile = new OpenFile(fcb, fill_path);
@@ -81,13 +93,159 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public Boolean read(String filePath) {
-        return null;
+        //判断是否存在
+        FCB fcb = dirService.pathResolve(filePath);
+        if(Objects.isNull(fcb)){
+            System.out.println("[error]: 目标文件不存在");
+            return false;
+        }else if(fcb.getType().equals('D')){
+            //type D 不是普通文件
+            System.out.println("[error]: 无法写目录文件");
+            return false;
+        }else {
+            //type N 普通文件
+            //判断文件权限
+            int permission = fileService.checkPermission(fcb);
+            if(permission == 0){
+                System.out.println("[error]: 无权限");
+                return false;
+            }
+            //判断是否在openFileList中
+            String fill_path = dirService.pwd(fcb);
+            List<OpenFile> openFileList = Memory.getInstance().getOpenFileList();
+            OpenFile toWriteFile = null;
+            for (OpenFile openFile : openFileList) {
+                if(openFile.getFilePath().equals(fill_path)){
+                    toWriteFile = openFile;
+                }
+            }
+            if(Objects.nonNull(toWriteFile)){
+                FAT[] fats = Memory.getInstance().getFat();
+                Block[] disk = Disk.getINSTANCE().getDisk();
+                //从磁盘读取
+                System.out.println("--------BEGIN--------");
+                if(fcb.getIndexNode().getSize() == 0){
+                    System.out.println("<!!!EMPTY FILE!!!>");
+                    System.out.println("---------END---------");
+                    return false;
+                }
+                FAT temp = fats[fcb.getIndexNode().getFirst_block()];
+                while (temp.getNextId() != -1){
+                    //遍历输出
+                    System.out.print(disk[temp.getId()].getContent());
+                    temp = fats[temp.getNextId()];
+                }
+                System.out.print(disk[temp.getId()].getContent());
+                System.out.println();
+                System.out.println("---------END---------");
+            }else {
+                System.out.println("[error]: 文件未打开 请先打开！");
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
+    /**写入文件**/
     public Boolean write(String filePath) {
-        // TODO: 2022-07-01 写 读 删除 所有权限加限制6位
-        return null;
+        //判断是否存在
+        FCB fcb = dirService.pathResolve(filePath);
+        if(Objects.isNull(fcb)){
+            System.out.println("[error]: 目标文件不存在");
+            return false;
+        }else if(fcb.getType().equals('D')){
+            //type D 不是普通文件
+            System.out.println("[error]: 无法写目录文件");
+            return false;
+        }else {
+            //type N 普通文件
+            //判断文件权限
+            int permission = fileService.checkPermission(fcb);
+            if(permission == 0){
+                System.out.println("[error]: 无权限");
+                return false;
+            }else if(permission == 4){
+                System.out.println("[error]: 该文件是只读文件");
+                return false;
+            }else {
+                //可写
+                //判断是否在openFileList中
+                String fill_path = dirService.pwd(fcb);
+                List<OpenFile> openFileList = Memory.getInstance().getOpenFileList();
+                OpenFile toWriteFile = null;
+                for (OpenFile openFile : openFileList) {
+                    if(openFile.getFilePath().equals(fill_path)){
+                        toWriteFile = openFile;
+                    }
+                }
+                if(Objects.nonNull(toWriteFile)){
+                    StringBuilder content = new StringBuilder();
+                    System.out.println("请输入要写入的内容（以$$结尾）:");
+                    //获取用户输入 输入$$结束
+                    while (true){
+                        String nextLine = scanner.nextLine();
+                        if(nextLine.endsWith("$$")){
+                            content.append(nextLine,0,nextLine.length()-2);
+                            break;
+                        }else {
+                            content.append(nextLine);
+                            content.append("\n");
+                        }
+                    }
+                    String choice = null;
+                    if(fcb.getIndexNode().getSize() == 0){
+                        //空文件 默认覆盖
+                        choice = "1";
+                    }else {
+                        //有内容 让用户选择写入模式
+                        while (true){
+                            System.out.println("原文件有内容 请选择覆盖写（1）/ 追加写（2）:");
+                            choice = scanner.nextLine();
+                            if(choice.equals("1") || choice.equals("2")){
+                                break;
+                            }
+                        }
+                    }
+                    FAT[] fats = Memory.getInstance().getFat();
+                    int size = content.toString().toCharArray().length;
+                    if(choice.equals("1")){
+                        //覆盖写入
+                        //1.如果不是空文件 则清空之前占据的盘块
+                        if(fcb.getIndexNode().getSize() != 0){
+                            diskService.freeFile(fcb);
+                        }
+                        //2.重新写入
+                        int first = diskService.writeToDisk(content.toString());
+                        //3.将文件指向第一块
+                        fcb.getIndexNode().setFirst_block(first);
+                        //4.修改索引结点大小
+                        fcb.getIndexNode().setSize(size);
+                    }else {
+                        //追加写入
+                        //1.从第一块往下找  直到-1的块的块号
+                        FAT temp = fats[fcb.getIndexNode().getFirst_block()];
+                        while (temp.getNextId() != -1){
+                            temp = fats[temp.getNextId()];
+                        }
+                        //2.写入要追加的内容
+                        content.insert(0,'\n');
+                        int append_begin = diskService.writeToDisk(content.toString());
+                        //3.修改最后一块指向新的内容
+                        temp.setNextId(append_begin);
+                        //4.修改索引结点大小 加上原来的
+                        fcb.getIndexNode().setSize(size + fcb.getIndexNode().getSize());
+                    }
+                    //修改父目录项 以及一直递归修改父目录的大小
+                    dirService.updateSize(fcb,true);
+                    System.out.println("[success]: 写入成功！");
+                    return true;
+                }else {
+                    System.out.println("[error]: 文件未打开 请先打开！");
+                    return false;
+                }
+            }
+        }
     }
 
     @Override
@@ -121,17 +279,37 @@ public class FileServiceImpl implements FileService {
             System.out.println("[error]: 文件未打开 无需关闭");
             return false;
         }
-
     }
 
     @Override
     public Boolean delete(String filePath) {
         return null;
     }
-
-
     @Override
-    public Boolean freeFile(String filePath) {
-        return null;
+    /**
+     * 查找当前用户对该文件的权限  0表示无权限 r=4,w=2,x=1 rwx=7 rw-=6 r--=4
+     */
+    public int checkPermission(FCB fcb) {
+        int permission = 0;
+        //查看是否是创建者
+        String per = null;
+        if(Memory.getInstance().getCurUser().getUserName().equals(fcb.getIndexNode().getCreator())){
+            //前三位
+            per = fcb.getIndexNode().getPermission().substring(0,3);
+        }else {
+            //后三位
+            per = fcb.getIndexNode().getPermission().substring(3);
+        }
+        char[] chars = per.toCharArray();
+        for (char c : chars) {
+            if(c == 'r'){
+                permission += Constants.READ;
+            }else if(c == 'w'){
+                permission += Constants.WRITE;
+            }else if(c == 'x'){
+                permission += Constants.EXECUTION;
+            }
+        }
+        return permission;
     }
 }

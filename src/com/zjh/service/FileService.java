@@ -1,5 +1,7 @@
 package com.zjh.service;
 
+import com.zjh.pojo.FCB;
+
 /**
  * @author 张俊鸿
  * @description: 文件操作
@@ -62,11 +64,13 @@ public interface FileService {
     Boolean delete(String filePath);
 
 
+
+
     /**
-     * 释放文件空间 修改FAT表和位示图
+     * 查找当前用户对该文件的权限
      *
-     * @param filePath 文件路径
-     * @return {@link Boolean}
+     * @param fcb FCB
+     * @return int 0表示无权限 r=4,w=2,x=1 rwx=7 rw-=6 r--=4
      */
-    Boolean freeFile(String filePath);
+    int checkPermission(FCB fcb);
 }
