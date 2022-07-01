@@ -81,6 +81,11 @@ public class UserServiceImpl implements UserService {
             System.out.println("[error]:请先登录");
             return false;
         }
+        //判断是否有文件未关闭
+        if(Memory.getInstance().getOpenFileList().size() > 0){
+            System.out.println("[error] 有文件未关闭 请先关闭");
+            return false;
+        }
         instance.setCurUser(null);
         instance.setCurDir(instance.getRootDir());
         instance.getOpenFileList().clear();

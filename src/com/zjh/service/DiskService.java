@@ -9,12 +9,12 @@ import com.zjh.pojo.FCB;
  */
 public interface DiskService {
     /**
-     * 释放目录中所有文件占用内存（后序遍历）
+     * 释放目录中所有文件占用内存（借助栈）
      *
-     * @param dirName 目录名
+     * @param fcb FCB
      * @return {@link Boolean}
      */
-    Boolean freeDir(String dirName);
+    Boolean freeDir(FCB fcb);
     /**
      * 释放文件空间 修改FAT表和位示图
      *

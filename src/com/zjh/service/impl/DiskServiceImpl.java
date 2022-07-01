@@ -6,6 +6,11 @@ import com.zjh.service.DirService;
 import com.zjh.service.DiskService;
 import com.zjh.utils.Utility;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
+
 /**
  * @author 张俊鸿
  * @description: 磁盘操作实现类
@@ -14,7 +19,20 @@ import com.zjh.utils.Utility;
 public class DiskServiceImpl implements DiskService {
     private static final DirService dirService = new DirServiceImpl();
     @Override
-    public Boolean freeDir(String dirName) {
+    /**释放目录中所有文件占用内存（借助栈）**/
+    public Boolean freeDir(FCB fcb) {
+        Stack<FCB> fcbStack = new Stack<>();
+        Queue<FCB> que = new LinkedList<>();
+        List<FCB> children = fcb.getChildren();
+        //层次遍历入栈
+        Boolean flag = false;
+        while (!flag){
+            //入栈
+            fcbStack.push(fcb);
+            //入队列
+            que.offer(fcb);
+        }
+        //依次出栈删除
         return null;
     }
     @Override
@@ -32,6 +50,7 @@ public class DiskServiceImpl implements DiskService {
             //将占据的盘块对应内容置空 （这里是假置空 考虑到直接将磁盘块置空消耗内存不实际）
             temp_2.setBitmap(0);
         }
+        temp_1.setBitmap(0);
         //2.修改父目录文件项数
         fcb.getFather().getIndexNode().subFcbNum();
         //3.递归修改父目录文件大小

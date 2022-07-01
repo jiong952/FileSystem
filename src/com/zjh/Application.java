@@ -6,6 +6,7 @@ import com.zjh.pojo.Memory;
 import com.zjh.service.*;
 import com.zjh.service.impl.*;
 import com.zjh.utils.Utility;
+import com.zjh.view.View;
 
 import java.util.Scanner;
 
@@ -63,6 +64,10 @@ public class Application {
                                     logout = userService.logout();
                                     break;
                                 case "mkdir":
+                                    if(inputs2.length == 1){
+                                        System.out.println("mkdir [dirName]");
+                                        break;
+                                    }
                                     System.out.println("请输入6位目录权限：r:读 w:写 x:执行[前三位表示自己] [后三位表示其他用户]");
                                     String permission2 = scanner.nextLine();
                                     while(permission2.length() != 6){
@@ -78,6 +83,10 @@ public class Application {
                                     System.out.println(path);
                                     break;
                                 case "create":
+                                    if(inputs2.length == 1){
+                                        System.out.println("create [fileName]");
+                                        break;
+                                    }
                                     System.out.println("请输入文件权限：r:读 w:写 x:执行[前三位表示自己] [后三位表示其他用户]");
                                     String permission = scanner.nextLine();
                                     while (permission.length() != 6){
@@ -127,8 +136,15 @@ public class Application {
                                 case "bitmap":
                                     dirService.bitmap();
                                     break;
+                                case "delete":
+                                    if(inputs2.length == 1){
+                                        System.out.println("delete [fileName]");
+                                        break;
+                                    }
+                                    fileService.delete(inputs2[1]);
+                                    break;
                                 default:
-                                    // TODO: 2022-07-01 这里放help函数
+                                    new View().help();
                                     break;
                             }
                         }
@@ -145,6 +161,7 @@ public class Application {
                     System.exit(0);
                     break;
                 default:
+                    new View().help();
                     break;
             }
         }

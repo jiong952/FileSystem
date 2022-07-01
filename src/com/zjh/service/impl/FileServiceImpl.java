@@ -282,8 +282,67 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    /**删除文件及目录**/
     public Boolean delete(String filePath) {
-        return null;
+        //判断是否存在
+        FCB fcb = dirService.pathResolve(filePath);
+        if(Objects.isNull(fcb)){
+            System.out.println("[error]: 目标文件不存在");
+            return false;
+        }
+        //判断权限 需要对文件夹具有rwx权限 对文件具有rw权限
+        int per_father = fileService.checkPermission(fcb.getFather());
+        int permission = fileService.checkPermission(fcb);
+        if(!(per_father == 7 && (permission == 7 || permission == 6))){
+            System.out.println("[error]: 无权限");
+            return false;
+        }
+        //判断是否打开 打开要先关闭
+        //判断是否在openFileList中
+        String fill_path = dirService.pwd(fcb);
+        List<OpenFile> openFileList = Memory.getInstance().getOpenFileList();
+        OpenFile toWriteFile = null;
+        for (OpenFile openFile : openFileList) {
+            if(openFile.getFilePath().equals(fill_path)){
+                toWriteFile = openFile;
+            }
+        }
+        if(Objects.nonNull(toWriteFile)){
+            System.out.println("[error]: 文件被打开 请先关闭");
+            return false;
+        }
+        //重复确认
+        String choice = null;
+        while (true){
+            System.out.println("确认删除该文件？（Y/N）");
+            choice = scanner.nextLine();
+            if(choice.equals("Y")) break;
+            if(choice.equals("N")) {
+                System.out.println("[success]: 已取消删除！");
+                return false;
+            }
+        }
+        //空文件判断
+        if(fcb.getIndexNode().getSize() != 0){
+            if(fcb.getType().equals('D')){
+                //type D 目录
+                //todo 借助栈删除目录
+//                diskService.freeDir(fcb);
+                System.out.println("[error]: 文件夹非空 无法删除");
+                return false;
+            }else {
+                //清空磁盘
+                diskService.freeFile(fcb);
+            }
+        }
+        //从FCB集合中去除 修改父目录文件项 修改父目录儿子结点
+        Disk.getINSTANCE().getFcbList().remove(fcb);
+        fcb.getFather().getIndexNode().subFcbNum();
+        fcb.getFather().getChildren().remove(fcb);
+        //递归修改父目录文件大小
+        dirService.updateSize(fcb,false);
+        System.out.println("[success]: 删除成功");
+        return true;
     }
     @Override
     /**
