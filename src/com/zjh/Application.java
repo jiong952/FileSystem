@@ -146,6 +146,13 @@ public class Application {
                                     }
                                     fileService.delete(inputs2[1]);
                                     break;
+                                case "rename":
+                                    if(inputs2.length < 3){
+                                        System.out.println("<rename> [filePath] [newName]");
+                                        break;
+                                    }
+                                    fileService.rename(inputs2[1],inputs2[2]);
+                                    break;
                                 case "ls":
                                     dirService.ls();
                                     break;

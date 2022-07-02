@@ -52,7 +52,7 @@ public class DiskServiceImpl implements DiskService {
         }
         temp_1.setBitmap(0);
         //3.递归修改父目录文件大小
-        dirService.updateSize(fcb,false);
+        dirService.updateSize(fcb,false,-1);
         //4.索引结点大小变为0 空文件
         fcb.getIndexNode().setSize(0);
         return true;

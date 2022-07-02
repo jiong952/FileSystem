@@ -26,6 +26,8 @@ public class View {
         System.out.println("<show_open> 显示打开的文件");
         System.out.println("<bitmap> 显示位示图");
         System.out.println("<ls> 显示目录文件名");
+        System.out.println("<rename> [filePath] [newName]文件重命名");
+        System.out.println("<dir/ll> 显示当前目录下所有文件详细信息");
         System.out.println("=====command======");
     }
     public void showFcb(FCB fcb,int color){

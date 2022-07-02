@@ -167,14 +167,18 @@ public class DirServiceImpl implements DirService {
 
     @Override
     /**更新目录大小**/
-    public void updateSize(FCB fcb, Boolean isAdd) {
+    public void updateSize(FCB fcb, Boolean isAdd ,int new_add) {
         FCB temp = fcb.getFather();
         while (temp != Memory.getInstance().getRootDir()){
             //递归修改父目录的大小
             int size = temp.getIndexNode().getSize();
             if(isAdd){
-                //增加目录大小
-                temp.getIndexNode().setSize(size + fcb.getIndexNode().getSize());
+                if(new_add == -1){
+                    //增加目录大小
+                    temp.getIndexNode().setSize(size + fcb.getIndexNode().getSize());
+                }else {
+                    temp.getIndexNode().setSize(size + new_add);
+                }
             }else {
                 temp.getIndexNode().setSize(size - fcb.getIndexNode().getSize());
             }

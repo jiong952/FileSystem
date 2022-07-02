@@ -48,7 +48,7 @@ public interface DirService {
      * @param fcb   FCB
      * @param isAdd 添加文件 add
      */
-    void updateSize(FCB fcb,Boolean isAdd);
+    void updateSize(FCB fcb,Boolean isAdd,int new_add);
     /**
      * 简略打印本目录的文件名信息
      */

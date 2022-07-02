@@ -225,6 +225,8 @@ public class FileServiceImpl implements FileService {
                         fcb.getIndexNode().setFirst_block(first);
                         //4.修改索引结点大小
                         fcb.getIndexNode().setSize(size);
+                        //修改父目录项 以及一直递归修改父目录的大小
+                        dirService.updateSize(fcb,true,-1);
                     }else {
                         //追加写入
                         //1.从第一块往下找  直到-1的块的块号
@@ -238,10 +240,11 @@ public class FileServiceImpl implements FileService {
                         //3.修改最后一块指向新的内容
                         temp.setNextId(append_begin);
                         //4.修改索引结点大小 加上原来的
-                        fcb.getIndexNode().setSize(size + fcb.getIndexNode().getSize());
+                        int size_origin = fcb.getIndexNode().getSize();
+                        fcb.getIndexNode().setSize(size + size_origin);
+                        //修改父目录项 以及一直递归修改父目录的大小
+                        dirService.updateSize(fcb,true,size);
                     }
-                    //修改父目录项 以及一直递归修改父目录的大小
-                    dirService.updateSize(fcb,true);
                     System.out.println("[success]: 写入成功！");
                     return true;
                 }else {
@@ -344,7 +347,7 @@ public class FileServiceImpl implements FileService {
         fcb.getFather().getIndexNode().subFcbNum();
         fcb.getFather().getChildren().remove(fcb);
         //递归修改父目录文件大小
-        dirService.updateSize(fcb,false);
+        dirService.updateSize(fcb,false,-1);
         System.out.println("[success]: 删除成功");
         return true;
     }
@@ -374,5 +377,41 @@ public class FileServiceImpl implements FileService {
             }
         }
         return permission;
+    }
+
+    @Override
+    /**文件重命名**/
+    public Boolean rename(String filePath, String newName) {
+        //判断是否存在
+        FCB fcb = dirService.pathResolve(filePath);
+        if(Objects.isNull(fcb)){
+            System.out.println("[error]: 目标文件不存在");
+            return false;
+        }
+        //判断文件权限
+        int permission = fileService.checkPermission(fcb);
+        if(permission == 0 || permission == 4){
+            System.out.println("[error]: 无权限");
+            return false;
+        }
+        //如果是普通文件 判断是否打开
+        if(fcb.getType().equals('N')){
+            String fill_path = dirService.pwd(fcb);
+            List<OpenFile> openFileList = Memory.getInstance().getOpenFileList();
+            OpenFile toWriteFile = null;
+            for (OpenFile openFile : openFileList) {
+                if(openFile.getFilePath().equals(fill_path)){
+                    toWriteFile = openFile;
+                }
+            }
+            if(Objects.nonNull(toWriteFile)){
+                System.out.println("[error]: 文件被打开 请先关闭！");
+                return false;
+            }
+        }
+        //进行重命名
+        fcb.setFileName(newName);
+        System.out.println("[success]: 修改成功！");
+        return true;
     }
 }
