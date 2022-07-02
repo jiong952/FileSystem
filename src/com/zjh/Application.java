@@ -20,7 +20,6 @@ public class Application {
     private static final UserService userService = new UserServiceImpl();
     private static final FileService fileService = new FileServiceImpl();
     private static final DirService dirService = new DirServiceImpl();
-    private static final DiskService diskService = new DiskServiceImpl();
     private static final Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
         //加载磁盘数据
@@ -36,14 +35,14 @@ public class Application {
         }
         Boolean login = false;
         while (true){
-            System.out.println("登录 / 注册 / 退出");
+            System.out.println("请选择login / register / exit：");
             String nextLine = scanner.nextLine();
             String[] inputs = Utility.inputResolve(nextLine);
             switch (inputs[0]){
                 case "login":
-                    System.out.print("用户名:");
+                    System.out.print("用户名: ");
                     String username = scanner.nextLine();
-                    System.out.print("密码:");
+                    System.out.print("密码: ");
                     String pwd = scanner.nextLine();
                     login = userService.login(username, pwd);
                     if(login){
@@ -75,12 +74,13 @@ public class Application {
                                         permission2 = scanner.nextLine();
                                     }
                                     dirService.mkdir(inputs2[1],permission2);
+                                    break;
                                 case "dir":
                                     dirService.dir();
                                     break;
                                 case "pwd":
                                     String path = dirService.pwd(Memory.getInstance().getCurDir());
-                                    System.out.println(path);
+                                    System.out.print(path);
                                     break;
                                 case "create":
                                     if(inputs2.length == 1){
@@ -143,6 +143,9 @@ public class Application {
                                     }
                                     fileService.delete(inputs2[1]);
                                     break;
+                                case "ls":
+                                    dirService.ls();
+                                    break;
                                 default:
                                     new View().help();
                                     break;
@@ -151,9 +154,9 @@ public class Application {
                     }
                     break;
                 case "register":
-                    System.out.print("用户名:");
+                    System.out.print("用户名: ");
                     String username2 = scanner.nextLine();
-                    System.out.print("密码:");
+                    System.out.print("密码: ");
                     String pwd2 = scanner.nextLine();
                     userService.register(username2,pwd2);
                     break;

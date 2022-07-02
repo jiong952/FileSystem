@@ -4,6 +4,7 @@ import com.zjh.constant.Constants;
 import com.zjh.pojo.*;
 import com.zjh.service.DirService;
 import com.zjh.service.FileService;
+import com.zjh.utils.Utility;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -30,16 +31,45 @@ public class DirServiceImpl implements DirService {
     public void dir() {
         Memory memory = Memory.getInstance();
         List<FCB> children = memory.getCurDir().getChildren();
-        System.out.println("目录权限    文件项数     创建者     文件大小    修改时间         文件名");
+        System.out.println("目录权限\t文件项数\t创建者\t文件大小\t   文件名\t\t\t  修改时间");
         for (int i = 0; i < children.size(); i++) {
             FCB fcb = children.get(i);
             IndexNode indexNode = fcb.getIndexNode();
-            System.out.println(fcb.getType() + indexNode.getPermission() + "      " +
-                    indexNode.getFcbNum() + "       " +
-                    indexNode.getCreator() + "   " +
-                    indexNode.getSize() + "   " +
-                    indexNode.getUpdateTime() + "   " +
-                    fcb.getFileName());
+            if(fcb.getType().equals('N')){
+                if(Utility.getSuffix(fcb.getFileName()).equals("exe")){
+                    //绿色
+                    System.out.println(fcb.getType() + indexNode.getPermission() + "\t  " +
+                            indexNode.getFcbNum() + "\t\t  " +
+                            indexNode.getCreator() + "\t\t  " +
+                            indexNode.getSize() + "\t\t\t" +
+                            Utility.getFormatLogString(fcb.getFileName(),36,0) + "\t\t" +
+                            indexNode.getUpdateTime());
+                }else if(Utility.getSuffix(fcb.getFileName()).equals("tar") || Utility.getSuffix(fcb.getFileName()).equals("zip") || Utility.getSuffix(fcb.getFileName()).equals("zip") || Utility.getSuffix(fcb.getFileName()).equals("rar")){
+                    System.out.println(fcb.getType() + indexNode.getPermission() + "\t  " +
+                            indexNode.getFcbNum() + "\t\t  " +
+                            indexNode.getCreator() + "\t\t  " +
+                            indexNode.getSize() + "\t\t\t" +
+                            Utility.getFormatLogString(fcb.getFileName(),31,0) + "\t\t" +
+                            indexNode.getUpdateTime());
+                }else {
+                    //普通文件
+                    System.out.println(fcb.getType() + indexNode.getPermission() + "\t  " +
+                            indexNode.getFcbNum() + "\t\t  " +
+                            indexNode.getCreator() + "\t\t  " +
+                            indexNode.getSize() + "\t\t\t" +
+                            fcb.getFileName() + "\t\t" +
+                            indexNode.getUpdateTime());
+                }
+            }else {
+                //蓝色
+                System.out.println(fcb.getType() + indexNode.getPermission() + "\t  " +
+                        indexNode.getFcbNum() + "\t\t  " +
+                        indexNode.getCreator() + "\t\t  " +
+                        indexNode.getSize() + "\t\t\t" +
+                        Utility.getFormatLogString(fcb.getFileName(),34,0) + "\t\t" +
+                        indexNode.getUpdateTime());
+            }
+
         }
     }
 
@@ -168,14 +198,26 @@ public class DirServiceImpl implements DirService {
 
 
     @Override
+    /**显示当前目录下的所有文件文件名**/
     public void ls() {
-
+        Memory memory = Memory.getInstance();
+        List<FCB> children = memory.getCurDir().getChildren();
+        for (int i = 0; i < children.size(); i++) {
+            FCB fcb = children.get(i);
+            if(fcb.getType().equals('N')){
+                if(Utility.getSuffix(fcb.getFileName()).equals("exe")){
+                    System.out.print(Utility.getFormatLogString(fcb.getFileName(),36,0) + " ");
+                }else if(Utility.getSuffix(fcb.getFileName()).equals("tar") || Utility.getSuffix(fcb.getFileName()).equals("zip") || Utility.getSuffix(fcb.getFileName()).equals("zip") || Utility.getSuffix(fcb.getFileName()).equals("rar")){
+                    System.out.print(Utility.getFormatLogString(fcb.getFileName(),31,0) + " ");
+                }else {
+                    System.out.print(fcb.getFileName() + " ");
+                }
+            }else {
+                System.out.print(Utility.getFormatLogString(fcb.getFileName(),34,0) + " ");
+            }
+        }
     }
 
-    @Override
-    public void dir_tree() {
-
-    }
 
     @Override
     /**显示全路径**/

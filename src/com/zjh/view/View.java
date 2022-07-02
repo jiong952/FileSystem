@@ -21,6 +21,7 @@ public class View {
         System.out.println("<delete> [fileName] 删除文件");
         System.out.println("<show_open> 显示打开的文件");
         System.out.println("<bitmap> 显示位示图");
+        System.out.println("<ls> 显示目录文件名");
         System.out.println("=====command======");
     }
 }

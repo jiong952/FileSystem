@@ -51,8 +51,6 @@ public class DiskServiceImpl implements DiskService {
             temp_2.setBitmap(0);
         }
         temp_1.setBitmap(0);
-        //2.修改父目录文件项数
-        fcb.getFather().getIndexNode().subFcbNum();
         //3.递归修改父目录文件大小
         dirService.updateSize(fcb,false);
         //4.索引结点大小变为0 空文件

@@ -85,6 +85,9 @@ public class FileServiceImpl implements FileService {
     @Override
     /**显示打开文件**/
     public void show_open() {
+        if(Memory.getInstance().getOpenFileList().size() == 0){
+            System.out.println("<无打开文件>");
+        }
         for (int i = 0; i < Memory.getInstance().getOpenFileList().size(); i++) {
             System.out.print(Memory.getInstance().getOpenFileList().get(i).getFcb().getFileName() + "\t");
         }
@@ -214,6 +217,7 @@ public class FileServiceImpl implements FileService {
                         //1.如果不是空文件 则清空之前占据的盘块
                         if(fcb.getIndexNode().getSize() != 0){
                             diskService.freeFile(fcb);
+                            fcb.getFather().getIndexNode().subFcbNum();
                         }
                         //2.重新写入
                         int first = diskService.writeToDisk(content.toString());
@@ -323,7 +327,7 @@ public class FileServiceImpl implements FileService {
             }
         }
         //空文件判断
-        if(fcb.getIndexNode().getSize() != 0){
+        if(fcb.getIndexNode().getSize() != 0 || fcb.getIndexNode().getFcbNum() != 0){
             if(fcb.getType().equals('D')){
                 //type D 目录
                 //todo 借助栈删除目录

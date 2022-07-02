@@ -55,11 +55,6 @@ public interface DirService {
     void ls();
 
     /**
-     * 树形打印所有目录及文件
-     */
-    void dir_tree();
-
-    /**
      * 显示当前全目录路径
      * /zjh/a
      *
