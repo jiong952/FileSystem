@@ -78,6 +78,9 @@ public class Application {
                                 case "dir":
                                     dirService.dir();
                                     break;
+                                case "ll":
+                                    dirService.dir();
+                                    break;
                                 case "pwd":
                                     String path = dirService.pwd(Memory.getInstance().getCurDir());
                                     System.out.print(path);
