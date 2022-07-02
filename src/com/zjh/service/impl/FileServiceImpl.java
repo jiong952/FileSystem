@@ -73,8 +73,21 @@ public class FileServiceImpl implements FileService {
                 System.out.println("[error]: 无权限");
                 return false;
             }
-            //加入openFileList中
+            //判断是否已经打开
+            //判断是否在openFileList中
             String fill_path = dirService.pwd(fcb);
+            List<OpenFile> openFileList = Memory.getInstance().getOpenFileList();
+            OpenFile toWriteFile = null;
+            for (OpenFile openFile : openFileList) {
+                if(openFile.getFilePath().equals(fill_path)){
+                    toWriteFile = openFile;
+                }
+            }
+            if(Objects.nonNull(toWriteFile)){
+                System.out.println("[error]: 文件已打开！");
+                return false;
+            }
+            //加入openFileList中
             OpenFile openFile = new OpenFile(fcb, fill_path);
             Memory.getInstance().getOpenFileList().add(openFile);
             System.out.println("[success]: 打开成功！");
