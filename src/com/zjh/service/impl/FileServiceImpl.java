@@ -302,7 +302,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    /**删除文件及目录**/
+    /**删除文件**/
     public Boolean delete(String filePath) {
         //判断是否存在
         FCB fcb = dirService.pathResolve(filePath);
@@ -354,6 +354,10 @@ public class FileServiceImpl implements FileService {
                 //清空磁盘
                 diskService.freeFile(fcb);
             }
+        }
+        //如果是空目录 不允许是当前目录
+        if(fcb == Memory.getInstance().getCurDir()){
+            System.out.println("[error]: 无法删除当前目录 请先退出当前目录！");
         }
         //从FCB集合中去除 修改父目录文件项 修改父目录儿子结点
         Disk.getINSTANCE().getFcbList().remove(fcb);
@@ -419,6 +423,16 @@ public class FileServiceImpl implements FileService {
             }
             if(Objects.nonNull(toWriteFile)){
                 System.out.println("[error]: 文件被打开 请先关闭！");
+                return false;
+            }
+        }
+        //判断是否重名
+        //判断重复
+        newName = newName.trim(); //去除首尾空格
+        List<FCB> children = Memory.getInstance().getCurDir().getChildren();
+        for (FCB child : children) {
+            if(child.getFileName().equals(newName)){
+                System.out.println("[error]: 文件名重复 请重新命名");
                 return false;
             }
         }
