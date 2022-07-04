@@ -27,13 +27,13 @@ public class DirServiceImpl implements DirService {
         sb.insert(0,'c');
         System.out.println(sb.toString());
     }
-    @Override
     /**显示当前目录下的所有文件项、
      * 白色 普通文件
      * 绿色 可执行文件
      * 红色 压缩文件
      * 蓝色 目录文件
      * **/
+    @Override
     public void dir() {
         Memory memory = Memory.getInstance();
         List<FCB> children = memory.getCurDir().getChildren();
@@ -59,8 +59,8 @@ public class DirServiceImpl implements DirService {
         }
     }
 
-    @Override
     /**创建目录**/
+    @Override
     public Boolean mkdir(String dirName,String permission) {
         FCB curDir = Memory.getInstance().getCurDir();
         User user = Memory.getInstance().getCurUser();
@@ -90,9 +90,14 @@ public class DirServiceImpl implements DirService {
         return true;
     }
 
-    @Override
     /**切换目录**/
+    @Override
     public Boolean cd(String path) {
+        //判断是否直接切换到根目录
+        if("/".equals(path.trim())){
+            Memory.getInstance().setCurDir(Memory.getInstance().getRootDir());
+            return true;
+        }
         //判断是不是..  ../
         if("..".equals(path.trim()) || "../".equals(path.trim())){
             FCB curDir = Memory.getInstance().getCurDir();
@@ -117,7 +122,6 @@ public class DirServiceImpl implements DirService {
         }else {
             //type D 切换到对应目录
             //判断权限
-            //判断权限
             int permission = fileService.checkPermission(fcb);
             if(permission == 0){
                 System.out.println("[error]: 无权限");
@@ -128,8 +132,8 @@ public class DirServiceImpl implements DirService {
         return null;
     }
 
-    @Override
     /**解析路径**/
+    @Override
     public FCB pathResolve(String path) {
         path = path.trim();
         FCB curDir = Memory.getInstance().getCurDir();
@@ -165,9 +169,9 @@ public class DirServiceImpl implements DirService {
         return null;
     }
 
-    @Override
     /**更新目录大小**/
-    public void updateSize(FCB fcb, Boolean isAdd ,int new_add) {
+    @Override
+    public void updateSize(FCB fcb, Boolean isAdd, int new_add) {
         FCB temp = fcb.getFather();
         while (temp != Memory.getInstance().getRootDir()){
             //递归修改父目录的大小
@@ -186,9 +190,8 @@ public class DirServiceImpl implements DirService {
         }
     }
 
-
-    @Override
     /**显示当前目录下的所有文件文件名**/
+    @Override
     public void ls() {
         Memory memory = Memory.getInstance();
         List<FCB> children = memory.getCurDir().getChildren();
@@ -208,9 +211,8 @@ public class DirServiceImpl implements DirService {
         }
     }
 
-
-    @Override
     /**显示全路径**/
+    @Override
     public String pwd(FCB fcb) {
         Memory memory = Memory.getInstance();
         StringBuilder sb = new StringBuilder();
@@ -223,6 +225,7 @@ public class DirServiceImpl implements DirService {
         }
         return sb.toString();
     }
+
     /**输入命令时显示当前目录**/
     @Override
     public void showPath() {
@@ -236,8 +239,8 @@ public class DirServiceImpl implements DirService {
         System.out.print(sb);
     }
 
-    @Override
     /**显示位示图**/
+    @Override
     public void bitmap() {
         FAT[] fats = Memory.getInstance().getFat();
         for (int i = 0; i < fats.length; i++) {
@@ -247,6 +250,4 @@ public class DirServiceImpl implements DirService {
             }
         }
     }
-
-
 }

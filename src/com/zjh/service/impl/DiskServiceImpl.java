@@ -18,8 +18,8 @@ import java.util.Stack;
  */
 public class DiskServiceImpl implements DiskService {
     private static final DirService dirService = new DirServiceImpl();
-    @Override
     /**释放目录中所有文件占用内存（借助栈）**/
+    @Override
     public Boolean freeDir(FCB fcb) {
         Stack<FCB> fcbStack = new Stack<>();
         Queue<FCB> que = new LinkedList<>();
@@ -35,8 +35,9 @@ public class DiskServiceImpl implements DiskService {
         //依次出栈删除
         return null;
     }
-    @Override
+
     /**清除文件占据的磁盘空间及改变FAT表**/
+    @Override
     public Boolean freeFile(FCB fcb) {
         FAT[] fats = Memory.getInstance().getFat();
         FAT temp_1 = fats[fcb.getIndexNode().getFirst_block()];
@@ -58,8 +59,8 @@ public class DiskServiceImpl implements DiskService {
         return true;
     }
 
-    @Override
     /**将内容写入磁盘块**/
+    @Override
     public int writeToDisk(String content) {
         //判断是否有足够的磁盘空间
         int needNum = Utility.ceilDivide(content.length(), Constants.BLOCK_SIZE);
@@ -94,8 +95,8 @@ public class DiskServiceImpl implements DiskService {
         return first;
     }
 
-    @Override
     /**寻找空闲块**/
+    @Override
     public int find_empty() {
         FAT[] fats = Memory.getInstance().getFat();
         for (int i = 0; i < fats.length; i++) {
